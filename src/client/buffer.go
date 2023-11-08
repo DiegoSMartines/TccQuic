@@ -146,7 +146,7 @@ func (c *ConfigurableImpl) ReadFile(filename string) error {
 				return err
 			}
 		case "adaptRate":
-			c.adaptRate, err = ParseArray(value)
+
 			log.Println("aaaaui", value)
 			if err != nil {
 				return err

@@ -8,10 +8,13 @@ import (
 	"log"
 	"main/src/model"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/lucas-clemente/quic-go"
 )
+
+var tileGlobal int = 1
 
 type Server struct {
 	serverURL   string
@@ -31,10 +34,8 @@ func (s *Server) Start() {
 
 	url := fmt.Sprintf("%s:%d", s.serverURL, s.serverPort)
 	config := &quic.Config{
-		MaxIdleTimeout:        500 * time.Minute, // Set a longer maximum idle timeout
-		HandshakeIdleTimeout:  100 * time.Second, // Set the receive connection flow control window size to 20 MB
-		MaxIncomingStreams:    20000,             // Set the maximum number of incoming streams
-		MaxIncomingUniStreams: 20000,             // Set the maximum number of incoming unidirectional streams
+		MaxIdleTimeout:       5 * time.Minute,  // Set a longer maximum idle timeout
+		HandshakeIdleTimeout: 10 * time.Second, // Set the receive connection flow control window size to 20 MB
 	}
 	listener, err := quic.ListenAddr(url, generateTLSConfig(), config)
 	if err != nil {
@@ -116,7 +117,11 @@ func (s *Server) readFile(bitrate model.Bitrate, segment int, tile int) []byte {
 	//data, err := os.ReadFile(basePath + fmt.Sprintf("/data/segments/video_tiled_%d_dash_track%d_%d.m4s", bitrate, segment, tile))
 	data, err := os.ReadFile(basePath + fmt.Sprintf("/data/segments/video_tiled_10_dash_track10_%d.m4s", segment))
 
+	str := strconv.Itoa(tileGlobal)
+
 	fmt.Printf("tile")
+	fmt.Printf(str)
+	tileGlobal += 1
 	if err != nil {
 		log.Println(err)
 	}
@@ -172,4 +177,3 @@ func (s *Server) sendData(stream quic.Stream, priority model.Priority, bitrate m
 		log.Println(err)
 	}
 }
-
